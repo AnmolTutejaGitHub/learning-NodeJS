@@ -45,3 +45,13 @@ if (command == 'add') {
     console.log('remove');
 }
 
+// node filenmae.js add --title="this is title"
+//yargs parsing from terminal
+const yargs = require('yargs');
+console.log(yargs.argv); //{ _: [ 'add' ], title: 'this is title', '$0': 'ModuleSystem.js' }
+
+//customise yargs version
+yargs.version('1.1.0');
+
+//in notes app features required add,remove,read,list
+
