@@ -5,6 +5,9 @@ const express = require('express');
 
 const hbs = require('hbs'); //to use partials
 
+const geocode = require('./utils/geocode');
+const forecast = require('./utils/forecast');
+
 // gives current file and directory name
 console.log(__dirname); // /Users/anmoltuteja/Desktop/learning-NodeJS/web-server/src
 console.log(__filename); // /Users/anmoltuteja/Desktop/learning-NodeJS/web-server/src/App.js
@@ -60,6 +63,55 @@ app.get('', (req, res) => {
     });
 })
 
+
+app.get('/weather', (req, res) => {
+    if (!req.query.address) {
+        return res.send({
+            error: 'You must provide an address'
+        })
+    }
+    geocode(req.query.address, (error, { latitude, longitude, location }) => {
+        if (error) {
+            return res.send({ error: error });
+        }
+
+        forecast(latitude, longitude, (error, forecastData) => {
+            res.send({
+                forecast: forecastData,
+                location,
+                address: req.query.address
+            })
+        })
+    })
+
+    // res.send({
+    //     forecast: 'It is snowing',
+    //     location: 'oheo',
+    //     address: res.query.address
+    // })
+})
+
+// handling query string in apis
+// app.get('/products', (req, res) => {
+//     // if url entered is ./product?search=games&rating=5
+//     console.log(req.query); // {search:'games',rating:'5'}
+//     res.send({
+//         products: []
+//     })
+// })
+
+
+app.get('/products', (req, res) => {
+    if (!req.query.search) {
+        return res.send({
+            error: 'You must provide a search term'
+        })
+    }
+    console.log(req.query);
+    res.send({
+        products: []
+    })
+})
 
 app.get('/about', (req, res) => {
     res.render('about', {
