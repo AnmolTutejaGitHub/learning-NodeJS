@@ -85,7 +85,7 @@ app.get('/weather', (req, res) => {
     // search is query to get it we have .query on req
 
     function originalApiCall() {
-        // fetch data from original api
+        // fetch data from original api here weatherstack
 
         res.send({
             // pass the only required data from api that we need as obj
