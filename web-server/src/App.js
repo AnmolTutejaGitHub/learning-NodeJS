@@ -2,7 +2,8 @@ const path = require('path'); //to get path for our public folder to get index.h
 // path is core node module
 
 const express = require('express');
-const { throwDeprecation } = require('process');
+
+const hbs = require('hbs'); //to use partials
 
 // gives current file and directory name
 console.log(__dirname); // /Users/anmoltuteja/Desktop/learning-NodeJS/web-server/src
@@ -11,7 +12,9 @@ console.log(__filename); // /Users/anmoltuteja/Desktop/learning-NodeJS/web-serve
 // path to public dir
 console.log(path.join(__dirname, '../public'));
 const PublicDirectoryPath = path.join(__dirname, '../public');
-const viewsPath = path.join(__dirname, '../views');
+const viewsPath = path.join(__dirname, '../templates/views');
+const partialsPath = path.join(__dirname, '../templates/partials');
+
 const app = express();
 //note : keep ur alll html,css and js files in public folder as that's 
 // what / whose path we provided 
@@ -19,9 +22,8 @@ const app = express();
 
 // hbs is npm module
 app.set('view engine', 'hbs'); //setting up views
-//app.set(views, viewsPath); //if want to change name of our views folder need to set views as the newnamedfolder
-
-
+app.set('views', viewsPath); //if want to change name of our views folder need to set views as the newnamedfolder
+hbs.registerPartials(partialsPath); //takes path for partials
 
 // use is used to customise our server will learn later
 //here we are config static .... hbs is for dynamic
@@ -68,11 +70,30 @@ app.get('/about', (req, res) => {
 
 app.get('/help', (req, res) => {
     res.render('help', {
-        helpText: 'this is helpful text'
+        helpText: 'this is helpful text',
+        title: 'help',
+        name: 'Anmol'
     });
 })
 
+// 404 page
+// '*' --> match with anything that has not been matched
+// wild card route
+app.get('/help/*', (req, res) => {
+    res.render('404', {
+        title: '404',
+        name: 'Anmol',
+        errorMessage: 'Help article not found'
+    });
+})
 
+app.get('*', (req, res) => {
+    res.render('404', {
+        title: '404',
+        name: 'Anmol',
+        errorMessage: 'Page not found'
+    });
+})
 app.listen(3000, () => {
     console.log('Server is up on port 3000');
 })
