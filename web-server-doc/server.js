@@ -76,6 +76,9 @@ app.use(express.static(PublicDirectoryPath));
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // working with apis 
 app.get('/weather', (req, res) => {
     // in urls we type /weater?search=pnp
@@ -93,7 +96,24 @@ app.get('/weather', (req, res) => {
             // see ./public/app.js
         })
     }
+
+    // Call the originalApiCall function
+    originalApiCall();
 })
+
+// /weather (e.g., domain.com/weather) is a route in your Express.js application, not necessarily a webpage by itself. It defines a specific URL path that your server can handle. In your case, when a user visits the /weather route,
+// your server will respond with data, which could be either an HTML page, JSON data, or other types of content.
+// In the example you’ve shared, the /weather route responds with JSON data related to the weather forecast based on a query parameter (e.g., domain.com/weather?search=city).
+
+// Key Points:
+// 	•	If you access /weather directly in a browser (e.g., http://localhost:3000/weather?search=city), it would show the JSON response. It’s not an actual webpage unless you design it to return HTML content.
+// 	•	If it returns JSON (as in your code), it’s commonly referred to as an API endpoint. Other parts of your app, like a frontend JavaScript file, can fetch data from /weather and then display it on a webpage dynamically.
+// 	•	If you want /weather to be a webpage, you could modify it to serve an HTML file or use a template engine (like Handlebars or EJS) to render HTML content.
+
+
+
+// res.send response from server it can be a webpage or json data or any other
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
