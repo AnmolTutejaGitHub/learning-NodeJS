@@ -145,4 +145,55 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
 
     // const usersCursor = db.collection('users').find({ age: 19 });
     // const count = await usersCursor.count();
+
+
+    // updating Document
+    // here using promise form instead of callback
+
+    //updateOne 1st arg whose u want to update criteria
+    // 2nd argument : to what
+    const updatePromise = db.collection('users').updateOne({
+        _id: new ObjectID("66ff7c7eefb461daf88165b9"),
+    }, {
+        //$set --> eg of update operators
+        $set: {
+            name: 'Mike'
+        }, // if not provided set it will replate the entire document with this
+        $inc: {
+            age: 1, // increment the age by 1 where id id ----
+        },
+    })
+
+    updatePromise.then((result) => {
+        console.log(result);
+    }).catch((error) => {
+        console.log(error);
+    })
+
+
+
+    db.collection('users').updateMany({
+        name: 'Anmol'
+    }, {
+        $set: {
+            name: 'Anmol Tuteja'
+        }
+    }).then((result) => {
+        console.log(result);
+    }).catch((error) => {
+        console.error(error);
+    });
+
+
+
+    // deleting document
+    db.collection('users').deleteMany({
+        age: 19,
+    }).then((result) => {
+        console.log(result);
+    }).catch((error) => {
+        console.log(error);
+    })
+
+
 })
