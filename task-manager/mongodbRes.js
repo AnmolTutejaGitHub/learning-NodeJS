@@ -78,6 +78,9 @@
 
 
 //////////////////////
+//mongodb driver
+// mongodb@6.9.0
+
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 const connectionURL = 'mongodb://127.0.0.1:27017';
@@ -94,6 +97,10 @@ const run = async () => {
     console.log(result.insertedId);
 
     client.close();
+
+    const usersCursor = db.collection('users').find({ age: 19 });
+    const count = await usersCursor.count();
+    console.log(count);
 };
 
 run();

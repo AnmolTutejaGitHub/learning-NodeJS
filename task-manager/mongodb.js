@@ -1,12 +1,16 @@
+// for mongodb@3.7.0 driver
+
 // CRUD operations : create,read,update,delete
 
 // mongod --dbpath ~/data/db
 
 //////////////////// connecting to mongodb server using node.js////////////////////////
 const mongodb = require('mongodb'); // monodb driver npm package
+// mongodb driver --> allows u to connect with mongodb database
 
 // mongodb client gives us access to func necessary to connect to the database 
 const MongoClient = mongodb.MongoClient; // MongoDB client
+const ObjectID = mongodb.ObjectID; //ObjectId //latest version // to generate our own ids
 
 // connect to local host mongodb server we are running
 // mongodb: -->as we are using their protocol
@@ -65,6 +69,12 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
     // getting reference to the database we want to manipulate
     const db = client.db(databaseName);
 
+    // func to generate new object ids for us 
+    const id = new ObjectID(); //ObjectId() // in latest versions
+    console.log(id); //of 12byte // first 4 bytes --> time at which created
+    console.log(id.getTimestamp()); // to get timestamp at which id was created
+    //mongodb id -> globally unique identiier
+
     // insertOne is asynchronous
     // db.collection('users').insertOne({
     //     name: 'Anmol',
@@ -78,12 +88,61 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
     // ops is property on result 
     // ops is array of document
     db.collection('users').insertOne({
+        _id: id, // we creteed using object id if not given mongodb will create for us
         name: 'Anmol',
         age: 19
     }, (error, result) => {
         if (error) return console.log('unable to insert user');
 
+        console.log(result.ops); //[ { name: 'Anmol', age: 19, _id: 66ff7d5577a330e99bf55a01 } ]
+        // from mongobd4+ use --> results.insertedIds
+    })
+
+
+
+    db.collection('users').insertMany([
+        {
+            name: 'zen',
+            age: 21
+        },
+        {
+            name: 'sunny',
+            age: 19
+        }
+    ], (error, result) => {
+        if (error) return console.log('unable to insert user');
+
         console.log(result.ops);
     })
 
+
+    // querying document
+
+    //findOne --> find the doument where name is Anmol
+    // callback func is called after findind\g
+    db.collection('users').findOne({ name: 'Anmol' }, (error, user) => {
+        if (error) {
+            return console.log('unable to find user');// when unable to connect
+        }
+        // user -> the document found
+        console.log(user); //if no user : null
+    })
+    //if want to search by id {_id = "66ff82af52fcf545fba65ac1"} will give error
+    // do {_id:new ObjectID(66ff82af52fcf545fba65ac1)}
+
+    // findOne --> gives 1st only if many
+    // find --> gives all
+
+    //db.collection('users').find({ age: 27 }); // does not return array but cursor(pointer to data) // can use toArray
+    db.collection('users').find({ age: 19 }).toArray((error, users) => {
+        console.log(users);
+    });
+
+    // why cursor is used ? as we have other methods to not always want array
+    db.collection('users').find({ age: 19 }).count((error, count) => {
+        console.log(count);
+    });
+
+    // const usersCursor = db.collection('users').find({ age: 19 });
+    // const count = await usersCursor.count();
 })
