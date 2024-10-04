@@ -1,32 +1,32 @@
-const { MongoClient } = require('mongodb');
+// const { MongoClient } = require('mongodb');
 
-const connectionURL = 'mongodb://127.0.0.1:27017';
-const databaseName = 'task-manager';
+// const connectionURL = 'mongodb://127.0.0.1:27017';
+// const databaseName = 'task-manager';
 
-async function main() {
-    const client = new MongoClient(connectionURL);
+// async function main() {
+//     const client = new MongoClient(connectionURL);
 
-    try {
-        await client.connect();
-        console.log('Connected to database successfully');
+//     try {
+//         await client.connect();
+//         console.log('Connected to database successfully');
 
-        const db = client.db(databaseName);
-        const collection = db.collection('users');
+//         const db = client.db(databaseName);
+//         const collection = db.collection('users');
 
-        const result = await collection.insertOne({
-            name: 'Anmol2',
-            age: 19
-        });
+//         const result = await collection.insertOne({
+//             name: 'Anmol2',
+//             age: 19
+//         });
 
-        console.log('User added with ID:', result.insertedId);
-    } catch (error) {
-        console.error('An error occurred:', error);
-    } finally {
-        await client.close();
-    }
-}
+//         console.log('User added with ID:', result.insertedId);
+//     } catch (error) {
+//         console.error('An error occurred:', error);
+//     } finally {
+//         await client.close();
+//     }
+// }
 
-main().catch(console.error);
+// main().catch(console.error);
 
 
 
@@ -72,3 +72,28 @@ main().catch(console.error);
 // });
 
 // console.log('Script execution completed. Waiting for async operations...');
+
+
+
+
+
+//////////////////////
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
+const connectionURL = 'mongodb://127.0.0.1:27017';
+const databaseName = 'task-manager';
+
+const run = async () => {
+    const client = await MongoClient.connect(connectionURL, { useNewUrlParser: true });
+    const db = client.db(databaseName);
+
+    const result = await db.collection('users').insertOne({
+        name: 'Anmol',
+        age: 19
+    });
+    console.log(result.insertedId);
+
+    client.close();
+};
+
+run();
