@@ -197,3 +197,28 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) =>
 
 
 })
+
+
+
+    // summary 
+    ```
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
+const ObjectID = mongodb.ObjectID;
+const connectionURL = 'mongodb://127.0.0.1:27017';
+const databaseName = 'task-manager';
+
+MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+    if (error) {
+        return console.log('some error occured');
+    }
+
+    const db = client.db(databaseName);
+
+    const id = new ObjectID();
+    console.log(id);
+    console.log(id.getTimestamp());
+
+    db.collection('users').CRUDoperation().then();
+});
+```
