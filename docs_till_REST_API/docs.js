@@ -87,6 +87,17 @@ app.delete('/users/:id', async (req, res) => {
     }
 })
 
+// async await form
+app.post('/users', async (req, res) => {
+    const user = new User(req.body);
+    try {
+        await user.save();
+        res.status(201).send(user);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+})
+
 ///////////////////////////////////// using route // no need of app.get etc all of them defined in user route
 app.use(userRoute);
 
