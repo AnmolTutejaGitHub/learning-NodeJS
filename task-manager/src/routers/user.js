@@ -1,6 +1,7 @@
 const express = require('express');
 const router = new express.Router();
 const User = require('../models/user');
+const auth = require('../middleware/auth');
 
 router.post('/users', async (req, res) => {
     const user = new User(req.body); // User mongoose model
@@ -14,7 +15,9 @@ router.post('/users', async (req, res) => {
     }
 })
 
-router.get('/users', async (req, res) => {
+// put middleware before route handler
+// here auth is middleware
+router.get('/users', auth, async (req, res) => {
     try {
         // User is mongoose model 
         // here using mongoose query on it 

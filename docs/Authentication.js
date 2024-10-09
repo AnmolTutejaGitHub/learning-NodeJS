@@ -173,3 +173,34 @@ tokens: [{
         required: true
     }
 }] // tokens array with each element as tokrn
+
+
+
+// on server.js
+// without middleware : new request -> rum route handler
+// with middleware : new request -> do something --> run route handler
+// next registering middleware
+// setting up user can see data if logged in only
+
+// basic working 
+app.use((req, res, next) => {
+    //console.log(req.method, req.path);
+    if (req.method === 'GET') {
+        res.send('get request disabled');
+    } else {
+        next(); // when code block reaches this part that means those req routers executes
+    }
+})
+
+
+// In Express.js, middleware refers to functions that execute during the lifecycle of a request, before the request is completed. Middleware functions can modify the request (req) and response (res) objects, execute any code, and terminate the request-response cycle or pass control to the next middleware function
+// in the stack. Middleware helps in structuring Express applications by breaking down tasks like authentication, logging, error handling, or processing input/output into reusable, composable functions.
+
+// Middleware Function Structure:
+app.use((req, res, next) => {
+    // middleware logic
+    next();
+});
+
+// **next()**: This is a function passed to the middleware. It is called to pass control to the next middleware in the pipeline. If you don’t call next(), the request
+// will hang because Express is waiting for a response or the next middleware to process the request. It’s crucial when you want multiple middleware functions to be executed in sequence.
