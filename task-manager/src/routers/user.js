@@ -7,6 +7,7 @@ router.post('/users', async (req, res) => {
     // req.body is obj // here creating new user
     try {
         await user.save();
+        const token = await user.generateAuthtoken();
         res.status(201).send(user);
     } catch (e) {
         res.status(400).send(e);
@@ -88,7 +89,9 @@ router.post('/users/login', async (req, res) => {
         // can make custom methods
         // func defined in userModel
         const user = await User.findByCredentials(req.body.email, req.body.password);
-        res.send(user);
+        // not setting token on User now below
+        const token = await user.generateAuthtoken();
+        res.send({ user, token });
     } catch (e) {
         res.status(400).send(e);
     }

@@ -1,6 +1,7 @@
 const validator = require('validator');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // Converted to Schema take advantage of middleware
 const userSchema = new mongoose.Schema({
@@ -40,7 +41,13 @@ const userSchema = new mongoose.Schema({
                 throw new Error("password can't contain 'password' ");
             }
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }] // tokens array with each element as tokrn
 });
 
 
@@ -60,6 +67,19 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
     return user;
 }
+
+
+// on instance not class --> can think of it 
+// static methods are avail on model 
+userSchema.methods.generateAuthtoken = async function () {
+    const user = this;
+    const token = jwt.sign({ _id: user._id.toString() }, 'tokenSecret');
+    console.log("Generated token:", token); // Log token to verify if generation works
+    user.tokens = user.tokens.concat({ token });
+    await user.save(); // saving as we modified user
+    return token;
+};
+
 
 // middleware 
 
@@ -82,6 +102,5 @@ userSchema.pre('save', async function (next) {
 });
 
 const User = mongoose.model('User', userSchema);
-
 
 module.exports = User;

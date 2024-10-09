@@ -118,3 +118,58 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
     return user;
 }
+
+
+// jwt -> JSON WEB TOKEN 
+// can send an authentication token when user logged in
+// then use that token to authenticate every request
+// can let token expire after certain time if dont want user to stay in forever
+const jwt = require('jsonwebtoken');
+
+const myFunction = async () => {
+    // return value from sign method is new token
+    // sign method takes 2 args
+    // 1) object that contains data that will be embedded in the token
+    // we need to store something that uniquely identify our usr (id)
+    // 2) 2nd arg is secret .. provide it random series of character
+    // in future will store it in env variable
+    // 3) 3rd arg is option which can help us modify our token
+    // one option is expirein which is used to expire our token
+    const token = jwt.sign({ _id: 'abc123' }, 'thisissecret', { expiresIn: '1 seconds' });
+    console.log(token); // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJhYmMxMjMiLCJpYXQiOjE3Mjg0NTA2MjZ9.NtsRubIcZr2HQAmVM-PMdl9V-_J22cFc-zfQA0g_QY4
+    // _____._____.______
+    // 1) is base 64 encoded json string . This is
+    // known as header . it contains some meta information // Base64 decoder --> {"alg":"HS256","typ":"JWT"}
+    // about what type of token is it -- it is JWT and algorithm that was used to genereate it
+    // 2) payload --> this is the actual data that we embedded in the token. it is also base 64 .. in our case id 
+    // decoder --> {"_id":"abc123","iat":1728450626}
+    // https://codebeautify.org/base64-to-json-converter
+    // 3) signature : used to verify the token
+    // someone must know signature to modify the data
+    // to modify the data must know secret 
+
+
+    //// to verify the token we must know secret that was used to create it
+    const data = jwt.verify(token, 'thisissecret');
+    console.log(data);
+}
+
+myFunction();
+
+
+userSchema.methods.generateAuthtoken = async function () {
+    const user = this;
+    const token = jwt.sign({ _id: user._id.toString() }, 'tokenSecret');
+    console.log("Generated token:", token); // Log token to verify if generation works
+    user.tokens = user.tokens.concat({ token });
+    await user.save(); // saving as we modified user
+    return token;
+};
+
+// user model has 
+tokens: [{
+    token: {
+        type: String,
+        required: true
+    }
+}] // tokens array with each element as tokrn
