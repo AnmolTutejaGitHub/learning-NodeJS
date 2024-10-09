@@ -84,3 +84,37 @@ const user = await User.findById(req.params.id);
 updates.forEach((update) => user[update] = req.body[update]);
 await user.save(); // only if updated manually not by findbyidandupdate
 
+
+
+
+//////////////////////////////// logging in users
+
+// adding new route
+router.post('/users/login', async (req, res) => {
+    try {
+        // can make custom methods
+        // func defined in userModel
+        const user = await User.findByCredentials(req.body.email, req.body.password);
+        res.send(user);
+    } catch (e) {
+        res.status(400).send();
+    }
+})
+
+// usermodel.js
+// creating custom methods on our Schema 
+// statics will define that func on our model/schema User
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email: email });
+    if (!user) {
+        throw new Error('unable to login');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        throw new Error('unable to login');
+    }
+
+    return user;
+}

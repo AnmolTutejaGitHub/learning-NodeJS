@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+        unique: true, // to make this work drop database if testing any before adding unique
         lowercase: true,
         validate(value) {
             // uisng npm module
@@ -41,6 +42,24 @@ const userSchema = new mongoose.Schema({
         }
     }
 });
+
+
+// creating custom methods on our Schema 
+// statics will define that func on our model/schema User
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email: email });
+    if (!user) {
+        throw new Error('unable to login');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        throw new Error('unable to login');
+    }
+
+    return user;
+}
 
 // middleware 
 
