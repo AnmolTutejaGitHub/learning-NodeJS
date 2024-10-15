@@ -204,3 +204,55 @@ app.use((req, res, next) => {
 
 // **next()**: This is a function passed to the middleware. It is called to pass control to the next middleware in the pipeline. If you don’t call next(), the request
 // will hang because Express is waiting for a response or the next middleware to process the request. It’s crucial when you want multiple middleware functions to be executed in sequence.
+
+
+
+
+
+
+////////////////
+//auth.js middleware
+// authentification middleware
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+
+const auth = async function (req, res, next) {
+    try {
+        const token = req.header('Authorization').replace('Bearer', '');
+        const decoded = jwt.verify(token, 'tokenSecret'); // payload userid
+
+        // find user by id
+        // also need to make sure that user tokens array has that token
+        // because we will be deleting token once user logs out
+        // why is tokens.token  is in the form of  String ('tokens.token' : token) whereas _id is not provided in form of  String  (_id: decoded._id)?
+        // That's a special syntax in Mongoose for accessing a property on an array of objects. So you could use tokens.token to say "look for an objet in the tokens array and check it's token property against this value".
+        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token });
+
+        if (!user) {
+            throw new Error(); //trigger catch below
+        }
+
+        // giving access to route handler of user
+        req.user = user;//creating user property in usrr
+        next();
+    }
+    catch (e) {
+        res.status(401).send({ error: 'Please authenticate' });
+    }
+}
+
+module.exports = auth;
+
+// router
+// put middleware before route handler
+// here auth is middleware
+router.get('/users', auth, async (req, res) => {
+    try {
+        // User is mongoose model 
+        // here using mongoose query on it 
+        const users = await User.find({});
+        res.send(users);
+    } catch (e) {
+        res.status(500).send();
+    }
+})

@@ -15,17 +15,54 @@ router.post('/users', async (req, res) => {
     }
 })
 
-// put middleware before route handler
-// here auth is middleware
-router.get('/users', auth, async (req, res) => {
+// // put middleware before route handler
+// // here auth is middleware
+// // no need show user all users
+// router.get('/users',auth, async (req, res) => {
+//     try {
+//         // User is mongoose model 
+//         // here using mongoose query on it 
+//         const users = await User.find({});
+//         res.send(users);
+//     } catch (e) {
+//         res.status(500).send();
+//     }
+// })
+
+router.post('/users/login', async (req, res) => {
     try {
-        // User is mongoose model 
-        // here using mongoose query on it 
-        const users = await User.find({});
-        res.send(users);
+        // can make custom methods
+        // func defined in userModel
+        const user = await User.findByCredentials(req.body.email, req.body.password);
+        // not setting token on User now below
+        const token = await user.generateAuthtoken();
+        res.send({ user, token });
     } catch (e) {
+        res.status(400).send(e);
+    }
+})
+
+
+router.get('users/logout', auth, async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token;
+        })
+        await req.user.save();
+    }
+    catch (e) {
         res.status(500).send();
     }
+})
+
+
+router.get('/users/me', auth, async (req, res) => {
+    try {
+        res.send(req.user);
+    } catch (e) {
+        res.status(400).send(e)
+    }
+
 })
 
 router.get('/users/:id', async (req, res) => {
@@ -85,19 +122,4 @@ router.delete('/users/:id', async (req, res) => {
         res.status(500).send(e);
     }
 })
-
-
-router.post('/users/login', async (req, res) => {
-    try {
-        // can make custom methods
-        // func defined in userModel
-        const user = await User.findByCredentials(req.body.email, req.body.password);
-        // not setting token on User now below
-        const token = await user.generateAuthtoken();
-        res.send({ user, token });
-    } catch (e) {
-        res.status(400).send(e);
-    }
-})
-
 module.exports = router;

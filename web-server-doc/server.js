@@ -55,7 +55,7 @@ const PublicDirectoryPath = path.join(__dirname, '../public');
 // use is used to customise our server will learn later
 //here we are config static .... hbs is for dynamic
 //if our public dir has indexedDB.html we gwt that
-app.use(express.static(PublicDirectoryPath));
+app.use(express.static(PublicDirectoryPath)); // All it does is it intercepts each request coming in and checks to see if the file being requested exists in the "publicDirectoryPath".If it is there, it'll serve the file for you. If not, then it will pass the request to the next middleware or route handler.
 // express.static():
 // 	•	express.static() is a built -in middleware function in Express.js that serves static files.
 // 	•	It is used to serve files from the file system, such as images, CSS, JavaScript, fonts, or HTML files, without having to define specific routes for them.
