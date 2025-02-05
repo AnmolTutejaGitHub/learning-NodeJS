@@ -45,3 +45,9 @@ fetch("https://api.example.com/data")
 axios **automatically parses** JSON responses, so you don’t need to call .json().
 
 **Example with axios**
+```jsx
+
+axios.get("https://api.example.com/data")
+  .then(response => console.log(response.data)) // Already a JS object
+  .catch(error => console.error("Error:", error));
+```
